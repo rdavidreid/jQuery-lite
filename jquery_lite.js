@@ -84,15 +84,46 @@
 
   DOMNodeCollection.prototype.removeClass = function(className) {
     this.htmlElements.forEach(function(htmlElement) {
-      
+      if (htmlElement.className.includes(className)) {
+        var arr = htmlElement.className.split(" ");
+        arr.splice(arr.indexOf(className),1);
+        htmlElement.className = arr.join(" ");
+      }
+
     });
+    return this.htmlElements;
   };
 
+  DOMNodeCollection.prototype.children = function() {
+    var childs = [];
+    this.htmlElements.forEach(function(htmlElement) {
+      childs.push(htmlElement.children);
+    });
+    return new DOMNodeCollection(childs);
+  };
 
+  DOMNodeCollection.prototype.parent = function() {
+    var parents = [];
+    this.htmlElements.forEach(function(htmlElement) {
+      parents.push(htmlElement.parentElement);
+    });
+    return new DOMNodeCollection(parents);
+  };
 
+  DOMNodeCollection.prototype.find = function(selector) {
+    var found = [];
+    this.htmlElements.forEach(function(htmlElement) {
+      found.push(htmlElement.querySelectorAll(selector));
+    });
+    return new DOMNodeCollection(found);
+  };
 
-
-
+  DOMNodeCollection.prototype.remove = function () {
+    this.htmlElements.forEach(function(htmlElement) {
+      htmlElement.parentNode.removeChild(htmlElement);
+    });
+    return (this.htmlElements = []);
+  };
 
 
 
