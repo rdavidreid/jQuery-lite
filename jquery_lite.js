@@ -6,6 +6,13 @@
   if(typeof window.Root === "undefined") {
     window.Root = {};
   }
+  var queuedFunctions = [];
+
+  document.addEventListener("DOMContentLoaded", function(){
+    queuedFunctions.forEach(function(fn) {
+      fn();
+    });
+  });
 
   Root.$l = function(arg) {
     if(typeof arg === "string") {
@@ -15,6 +22,12 @@
     }
     else if(typeof arg === "object" && arg instanceof HTMLElement) {
       return new DOMNodeCollection([arg]);
+    }
+    else if(typeof arg === "function") {
+      queuedFunctions.push(arg);
+      if (document.readyState === "complete") {
+        arg();
+      }
     }
   };
 
