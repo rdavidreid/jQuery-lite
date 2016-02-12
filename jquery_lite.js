@@ -31,6 +31,22 @@
     }
   };
 
+  Root.$l.extend = function() {
+    if(arguments.length < 2) {
+      return arguments[0];
+    }
+    var merged = {};
+
+    var args = [].slice.apply(arguments);
+    for (var i = 0; i < args.length; i++) {
+      var obj = args[i];
+      Object.keys(obj).forEach(function(key) {
+        merged[key] = obj[key];
+      });
+    }
+    return merged;
+  };
+
   // jQuery lite object
 
   function DOMNodeCollection(htmlElements) {
