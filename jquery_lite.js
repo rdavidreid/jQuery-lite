@@ -22,6 +22,8 @@
 
   function DOMNodeCollection(htmlElements) {
     this.htmlElements = htmlElements;
+    this.eventHandlers = {};
+    this.queuedFunctions = [];
   }
 
   DOMNodeCollection.prototype.html = function(string) {
@@ -125,9 +127,41 @@
     return (this.htmlElements = []);
   };
 
+  DOMNodeCollection.prototype.on = function (type,callback) {
+    var that = this;
+    this.htmlElements.forEach(function(htmlElement) {
+      if(that.eventHandlers[type] == undefined) {
+        that.eventHandlers[type] = [callback];
+      } else {
+        that.eventHandlers[type].push(callback);
+      }
+      htmlElement.addEventListener(type, callback);
+    });
+    return this.htmlElements;
+  };
 
-
-
+  DOMNodeCollection.prototype.off = function(type,callback) {
+    var that = this;
+    if (callback === undefined) {
+      this.htmlElements.forEach(function(htmlElement) {
+        that.eventHandlers[type].forEach(function(cb) {
+          htmlElement.removeEventListener(type, cb);
+        });
+      });
+      this.eventHandlers[type] = null;
+    }
+    else {
+      this.htmlElements.forEach(function(htmlElement) {
+        htmlElement.removeEventListener(type,callback);
+      });
+      for (var i = this.eventHandlers[type].length - 1; i >= 0; i--) {
+        if(this.eventHandlers[type][i] === callback) {
+          this.eventHandlers[type].splice(i,1);
+        }
+      }
+    }
+    return this.htmlElements;
+  };
 
 
 })();
